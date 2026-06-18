@@ -6,7 +6,7 @@
  */
 
 :root {
-  --ticker-gap: 30px;
+  --ticker-gap: 15px;
   --ticker-item-bg: rgba(255, 255, 255, 0.05);
   --ticker-border: rgba(255, 255, 255, 0.1);
   --color-pos: hsl(140, 80%, 45%);
