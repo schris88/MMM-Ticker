@@ -1,0 +1,133 @@
+/* Magic Mirror
+ * Module: MMM-Ticker Stylesheet
+ *
+ * By Christian Stengel
+ * MIT Licensed.
+ */
+
+:root {
+  --ticker-gap: 30px;
+  --ticker-item-bg: rgba(255, 255, 255, 0.05);
+  --ticker-border: rgba(255, 255, 255, 0.1);
+  --color-pos: hsl(140, 80%, 45%);
+  --color-neg: hsl(350, 80%, 50%);
+  --color-neutral: #aaaaaa;
+}
+
+.mmm-ticker-container {
+  font-family: "Roboto Condensed", "Helvetica Neue", Arial, sans-serif;
+  color: #ffffff;
+  font-size: 16px;
+  width: 100%;
+}
+
+.mmm-ticker-container .loading {
+  color: var(--color-neutral);
+  font-style: italic;
+  padding: 10px;
+}
+
+.mmm-ticker-container .no-data {
+  color: var(--color-neg);
+  font-style: italic;
+  padding: 10px;
+}
+
+/* Stock item default design */
+.mmm-ticker-container .stock-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  background-color: var(--ticker-item-bg);
+  border: 1px solid var(--ticker-border);
+  white-space: nowrap;
+}
+
+.mmm-ticker-container .stock-name {
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.mmm-ticker-container .stock-price {
+  font-weight: 500;
+  color: #dddddd;
+}
+
+.mmm-ticker-container .stock-change {
+  font-weight: 600;
+  color: var(--color-neutral);
+  font-size: 14px;
+}
+
+.mmm-ticker-container .stock-change.pos {
+  color: var(--color-pos);
+}
+
+.mmm-ticker-container .stock-change.neg {
+  color: var(--color-neg);
+}
+
+.mmm-ticker-container .stock-error {
+  color: var(--color-neg);
+  font-size: 12px;
+  font-style: italic;
+}
+
+/* Mode: TABLE */
+.mmm-ticker-container.table-mode {
+  display: grid;
+  grid-template-columns: repeat(var(--columns, 3), 1fr);
+  gap: 12px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Mode: TICKER */
+.mmm-ticker-container.ticker-mode {
+  width: 100%;
+  overflow: hidden;
+}
+
+.mmm-ticker-container .mmm-ticker-marquee-wrapper {
+  overflow: hidden;
+  width: 100%;
+  display: flex;
+}
+
+.mmm-ticker-container .mmm-ticker-marquee-inner {
+  display: inline-flex;
+  white-space: nowrap;
+  will-change: transform;
+  animation: mmm-ticker-marquee linear infinite;
+}
+
+.mmm-ticker-container .mmm-ticker-marquee-inner.speed-slow {
+  animation-duration: 60s;
+}
+
+.mmm-ticker-container .mmm-ticker-marquee-inner.speed-medium {
+  animation-duration: 30s;
+}
+
+.mmm-ticker-container .mmm-ticker-marquee-inner.speed-fast {
+  animation-duration: 15s;
+}
+
+.mmm-ticker-container .mmm-ticker-group {
+  display: inline-flex;
+  gap: var(--ticker-gap);
+  padding-right: var(--ticker-gap); /* Add spacing between groups */
+}
+
+/* GPU Hardware acceleration */
+@keyframes mmm-ticker-marquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}

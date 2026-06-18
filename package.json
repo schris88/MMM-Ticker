@@ -1,0 +1,8 @@
+{
+  "name": "mmm-ticker",
+  "version": "1.0.0",
+  "description": "A performant, modern, and stutter-free stock ticker module for MagicMirror",
+  "main": "node_helper.js",
+  "author": "Christian Stengel",
+  "license": "MIT"
+}
