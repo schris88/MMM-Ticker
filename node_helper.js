@@ -31,7 +31,7 @@ module.exports = NodeHelper.create({
 
         // Fetch each stock with a small delay to avoid rate limiting
         for (let i = 0; i < symbols.length; i++) {
-            const symbol = symbols[i];
+            const symbol = typeof symbols[i] === "string" ? symbols[i] : symbols[i].symbol;
             const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=2d&interval=1d`;
 
             try {

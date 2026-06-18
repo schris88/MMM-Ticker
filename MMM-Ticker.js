@@ -162,6 +162,122 @@ Module.register("MMM-Ticker", {
         return stockEl;
     },
 
+    calculatePortfolio: function () {
+        let totalValue = 0;
+        let totalChange = 0;
+        let totalPrevValue = 0;
+        let hasPortfolio = false;
+
+        this.config.symbols.forEach(s => {
+            const isObject = typeof s === "object" && s.symbol && s.shares !== undefined;
+            const sym = isObject ? s.symbol : s;
+            const shares = isObject ? s.shares : 0;
+            
+            if (shares > 0) {
+                hasPortfolio = true;
+                const stock = this.stocks.find(st => st.symbol === sym);
+                if (stock && stock.success && stock.price !== null) {
+                    const price = stock.price;
+                    const change = stock.change !== null ? stock.change : 0;
+                    const prevClose = price - change;
+                    
+                    totalValue += price * shares;
+                    totalPrevValue += prevClose * shares;
+                }
+            }
+        });
+
+        if (!hasPortfolio) {
+            // Unweighted average daily return
+            const validStocks = this.stocks.filter(st => st.success && st.changePercent !== null);
+            if (validStocks.length === 0) return null;
+            const avgChangePercent = validStocks.reduce((sum, st) => sum + st.changePercent, 0) / validStocks.length;
+            return {
+                isPortfolio: false,
+                changePercent: avgChangePercent
+            };
+        }
+
+        totalChange = totalValue - totalPrevValue;
+        const totalChangePercent = totalPrevValue !== 0 ? (totalChange / totalPrevValue) * 100 : 0;
+
+        return {
+            isPortfolio: true,
+            totalValue: totalValue,
+            change: totalChange,
+            changePercent: totalChangePercent
+        };
+    },
+
+    createSentimentElement: function (sentiment) {
+        if (!sentiment) return null;
+        
+        const sentimentEl = document.createElement("div");
+        sentimentEl.className = "stock-item sentiment-item";
+        
+        if (sentiment.isPortfolio) {
+            if (sentiment.change > 0) {
+                sentimentEl.classList.add("pos-bg");
+            } else if (sentiment.change < 0) {
+                sentimentEl.classList.add("neg-bg");
+            }
+        } else {
+            if (sentiment.changePercent > 0) {
+                sentimentEl.classList.add("pos-bg");
+            } else if (sentiment.changePercent < 0) {
+                sentimentEl.classList.add("neg-bg");
+            }
+        }
+        
+        const labelEl = document.createElement("span");
+        labelEl.className = "sentiment-label";
+        
+        if (sentiment.isPortfolio) {
+            labelEl.innerText = "Tagesplus:";
+            if (sentiment.change < 0) {
+                labelEl.innerText = "Tagesminus:";
+            }
+            sentimentEl.appendChild(labelEl);
+            
+            const changeEl = document.createElement("span");
+            changeEl.className = "portfolio-change";
+            
+            if (this.config.colored) {
+                if (sentiment.change > 0) {
+                    changeEl.classList.add("pos");
+                } else if (sentiment.change < 0) {
+                    changeEl.classList.add("neg");
+                }
+            }
+            
+            const sign = sentiment.change > 0 ? "+" : "";
+            const arrow = sentiment.change > 0 ? "▲" : (sentiment.change < 0 ? "▼" : "•");
+            changeEl.innerText = `${arrow} ${sign}${sentiment.change.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € (${sign}${sentiment.changePercent.toFixed(2)}%)`;
+            sentimentEl.appendChild(changeEl);
+        } else {
+            labelEl.innerText = "Tages-Sentiment:";
+            sentimentEl.appendChild(labelEl);
+            
+            const changeEl = document.createElement("span");
+            changeEl.className = "sentiment-change";
+            
+            if (this.config.colored) {
+                if (sentiment.changePercent > 0) {
+                    changeEl.classList.add("pos");
+                } else if (sentiment.changePercent < 0) {
+                    changeEl.classList.add("neg");
+                }
+            }
+            
+            const sign = sentiment.changePercent > 0 ? "+" : "";
+            const arrow = sentiment.changePercent > 0 ? "▲" : (sentiment.changePercent < 0 ? "▼" : "•");
+            changeEl.innerText = `${arrow} ${sign}${sentiment.changePercent.toFixed(2)}%`;
+            sentimentEl.appendChild(changeEl);
+        }
+        
+        return sentimentEl;
+    },
+
     getDom: function () {
         const wrapper = document.createElement("div");
         wrapper.className = "mmm-ticker-container";
@@ -176,10 +292,18 @@ Module.register("MMM-Ticker", {
             return wrapper;
         }
 
+        const sentiment = this.calculatePortfolio();
+
         if (this.config.mode === "table") {
             wrapper.classList.add("table-mode");
             wrapper.style.setProperty("--columns", this.config.columns);
             
+            // Add sentiment banner at the top of the table
+            const sentimentEl = this.createSentimentElement(sentiment);
+            if (sentimentEl) {
+                wrapper.appendChild(sentimentEl);
+            }
+
             this.stocks.forEach(stock => {
                 const item = this.createStockElement(stock);
                 wrapper.appendChild(item);
@@ -202,6 +326,13 @@ Module.register("MMM-Ticker", {
             const renderGroup = () => {
                 const group = document.createElement("div");
                 group.className = "mmm-ticker-group";
+                
+                // Add sentiment item at the start of the ticker
+                const sentimentEl = this.createSentimentElement(sentiment);
+                if (sentimentEl) {
+                    group.appendChild(sentimentEl);
+                }
+
                 this.stocks.forEach(stock => {
                     const item = this.createStockElement(stock);
                     group.appendChild(item);
