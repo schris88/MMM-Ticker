@@ -210,70 +210,38 @@ Module.register("MMM-Ticker", {
     },
 
     createSentimentElement: function (sentiment) {
-        if (!sentiment) return null;
+        if (!sentiment || sentiment.isPortfolio) return null;
         
         const sentimentEl = document.createElement("div");
         sentimentEl.className = "stock-item sentiment-item";
         
-        if (sentiment.isPortfolio) {
-            if (sentiment.change > 0) {
-                sentimentEl.classList.add("pos-bg");
-            } else if (sentiment.change < 0) {
-                sentimentEl.classList.add("neg-bg");
-            }
-        } else {
-            if (sentiment.changePercent > 0) {
-                sentimentEl.classList.add("pos-bg");
-            } else if (sentiment.changePercent < 0) {
-                sentimentEl.classList.add("neg-bg");
-            }
+        if (sentiment.changePercent > 0) {
+            sentimentEl.classList.add("pos-bg");
+        } else if (sentiment.changePercent < 0) {
+            sentimentEl.classList.add("neg-bg");
         }
         
         const labelEl = document.createElement("span");
         labelEl.className = "sentiment-label";
         
-        if (sentiment.isPortfolio) {
-            labelEl.innerText = "Tagesplus:";
-            if (sentiment.change < 0) {
-                labelEl.innerText = "Tagesminus:";
+        labelEl.innerText = "Tages-Sentiment:";
+        sentimentEl.appendChild(labelEl);
+        
+        const changeEl = document.createElement("span");
+        changeEl.className = "sentiment-change";
+        
+        if (this.config.colored) {
+            if (sentiment.changePercent > 0) {
+                changeEl.classList.add("pos");
+            } else if (sentiment.changePercent < 0) {
+                changeEl.classList.add("neg");
             }
-            sentimentEl.appendChild(labelEl);
-            
-            const changeEl = document.createElement("span");
-            changeEl.className = "portfolio-change";
-            
-            if (this.config.colored) {
-                if (sentiment.change > 0) {
-                    changeEl.classList.add("pos");
-                } else if (sentiment.change < 0) {
-                    changeEl.classList.add("neg");
-                }
-            }
-            
-            const sign = sentiment.change > 0 ? "+" : "";
-            const arrow = sentiment.change > 0 ? "▲" : (sentiment.change < 0 ? "▼" : "•");
-            changeEl.innerText = `${arrow} ${sign}${sentiment.change.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € (${sign}${sentiment.changePercent.toFixed(2)}%)`;
-            sentimentEl.appendChild(changeEl);
-        } else {
-            labelEl.innerText = "Tages-Sentiment:";
-            sentimentEl.appendChild(labelEl);
-            
-            const changeEl = document.createElement("span");
-            changeEl.className = "sentiment-change";
-            
-            if (this.config.colored) {
-                if (sentiment.changePercent > 0) {
-                    changeEl.classList.add("pos");
-                } else if (sentiment.changePercent < 0) {
-                    changeEl.classList.add("neg");
-                }
-            }
-            
-            const sign = sentiment.changePercent > 0 ? "+" : "";
-            const arrow = sentiment.changePercent > 0 ? "▲" : (sentiment.changePercent < 0 ? "▼" : "•");
-            changeEl.innerText = `${arrow} ${sign}${sentiment.changePercent.toFixed(2)}%`;
-            sentimentEl.appendChild(changeEl);
         }
+        
+        const sign = sentiment.changePercent > 0 ? "+" : "";
+        const arrow = sentiment.changePercent > 0 ? "▲" : (sentiment.changePercent < 0 ? "▼" : "•");
+        changeEl.innerText = `${arrow} ${sign}${sentiment.changePercent.toFixed(2)}%`;
+        sentimentEl.appendChild(changeEl);
         
         return sentimentEl;
     },
