@@ -37,12 +37,19 @@
 .mmm-ticker-container .stock-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 6px 12px;
-  border-radius: 4px;
-  background-color: var(--ticker-item-bg);
-  border: 1px solid var(--ticker-border);
+  gap: 8px;
+  padding: 4px 0;
+  background-color: transparent;
+  border: none;
   white-space: nowrap;
+}
+
+/* Elegant bullet separator after each item */
+.mmm-ticker-container .stock-item::after {
+  content: "•";
+  margin-left: var(--ticker-gap);
+  color: #555555;
+  font-size: 16px;
 }
 
 .mmm-ticker-container .stock-name {
