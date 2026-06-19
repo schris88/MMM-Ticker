@@ -7,8 +7,8 @@
 
 :root {
   --ticker-gap: 15px;
-  --ticker-item-bg: rgba(255, 255, 255, 0.08);
-  --ticker-border: rgba(255, 255, 255, 0.3);
+  --ticker-item-bg: rgba(255, 255, 255, 0.05);
+  --ticker-border: rgba(255, 255, 255, 0.1);
   --color-pos: hsl(140, 80%, 45%);
   --color-neg: hsl(350, 80%, 50%);
   --color-neutral: #aaaaaa;
@@ -19,8 +19,6 @@
   color: #ffffff;
   font-size: 16px;
   width: 100%;
-  padding-bottom: 12px;
-  box-sizing: border-box;
 }
 
 .mmm-ticker-container .loading {
@@ -107,21 +105,27 @@
 }
 
 .mmm-ticker-container .mmm-ticker-marquee-inner.speed-slow {
-  animation-duration: 60s;
+  animation-duration: 150s;
 }
 
 .mmm-ticker-container .mmm-ticker-marquee-inner.speed-medium {
-  animation-duration: 30s;
+  animation-duration: 80s;
 }
 
 .mmm-ticker-container .mmm-ticker-marquee-inner.speed-fast {
-  animation-duration: 15s;
+  animation-duration: 40s;
 }
 
 .mmm-ticker-container .mmm-ticker-group {
   display: inline-flex;
   gap: var(--ticker-gap);
-  padding-right: var(--ticker-gap); /* Add spacing between groups */
+  padding-right: var(--ticker-gap);
+}
+
+/* Reduce default MagicMirror module margins for the ticker */
+.module.MMM-Ticker {
+  margin-top: 5px !important;
+  margin-bottom: 5px !important;
 }
 
 /* GPU Hardware acceleration */
@@ -129,47 +133,8 @@
   0% {
     transform: translate3d(0, 0, 0);
   }
+
   100% {
     transform: translate3d(-50%, 0, 0);
   }
 }
-
-/* Sentiment / Portfolio Card Styling */
-.mmm-ticker-container .sentiment-item {
-  border-width: 2px;
-  font-weight: 700;
-}
-
-.mmm-ticker-container .sentiment-item.pos-bg {
-  background-color: rgba(0, 204, 102, 0.12);
-  border-color: var(--color-pos);
-}
-
-.mmm-ticker-container .sentiment-item.neg-bg {
-  background-color: rgba(255, 51, 51, 0.12);
-  border-color: var(--color-neg);
-}
-
-.mmm-ticker-container .sentiment-label {
-  text-transform: uppercase;
-  font-size: 13px;
-  letter-spacing: 0.5px;
-  color: #dddddd;
-  margin-right: 4px;
-}
-
-.mmm-ticker-container .portfolio-change,
-.mmm-ticker-container .sentiment-change {
-  font-weight: 700;
-}
-
-/* Table Mode Sentiment Banner */
-.mmm-ticker-container.table-mode .sentiment-item {
-  grid-column: 1 / -1;
-  justify-content: center;
-  font-size: 18px;
-  padding: 10px 20px;
-  margin-bottom: 8px;
-  gap: 15px;
-}
-
