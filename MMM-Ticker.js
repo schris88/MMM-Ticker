@@ -67,7 +67,7 @@ Module.register("MMM-Ticker", {
         if (price === null || price === undefined) return "---";
         const symbol = this.config.currencySymbols[currency] || (currency + " ");
         const formattedVal = price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        
+
         if (currency === "EUR") {
             return `${formattedVal} ${symbol}`;
         } else {
@@ -78,18 +78,18 @@ Module.register("MMM-Ticker", {
     formatChange: function (change, changePercent) {
         if (change === null || change === undefined) return "";
         let result = "";
-        
+
         if (this.config.showChangeValue) {
             const sign = change > 0 ? "+" : "";
             result += `${sign}${change.toFixed(2)}`;
         }
-        
+
         if (this.config.showChangePercent) {
             if (result !== "") result += " ";
             const sign = changePercent > 0 ? "+" : "";
             result += `(${sign}${changePercent.toFixed(2)}%)`;
         }
-        
+
         return result;
     },
 
@@ -98,7 +98,7 @@ Module.register("MMM-Ticker", {
         if (this.config.customNames[symbol]) {
             return this.config.customNames[symbol];
         }
-        
+
         if (this.config.showName && stock.name) {
             return stock.name;
         }
@@ -137,10 +137,10 @@ Module.register("MMM-Ticker", {
             // Change
             const change = stock.change;
             const changePercent = stock.changePercent;
-            
+
             const changeEl = document.createElement("span");
             changeEl.className = "stock-change";
-            
+
             if (this.config.colored) {
                 if (change > 0) {
                     changeEl.classList.add("pos");
@@ -172,7 +172,7 @@ Module.register("MMM-Ticker", {
             const isObject = typeof s === "object" && s.symbol && s.shares !== undefined;
             const sym = isObject ? s.symbol : s;
             const shares = isObject ? s.shares : 0;
-            
+
             if (shares > 0) {
                 hasPortfolio = true;
                 const stock = this.stocks.find(st => st.symbol === sym);
@@ -180,7 +180,7 @@ Module.register("MMM-Ticker", {
                     const price = stock.price;
                     const change = stock.change !== null ? stock.change : 0;
                     const prevClose = price - change;
-                    
+
                     totalValue += price * shares;
                     totalPrevValue += prevClose * shares;
                 }
@@ -209,43 +209,6 @@ Module.register("MMM-Ticker", {
         };
     },
 
-    createSentimentElement: function (sentiment) {
-        if (!sentiment || sentiment.isPortfolio) return null;
-        
-        const sentimentEl = document.createElement("div");
-        sentimentEl.className = "stock-item sentiment-item";
-        
-        if (sentiment.changePercent > 0) {
-            sentimentEl.classList.add("pos-bg");
-        } else if (sentiment.changePercent < 0) {
-            sentimentEl.classList.add("neg-bg");
-        }
-        
-        const labelEl = document.createElement("span");
-        labelEl.className = "sentiment-label";
-        
-        labelEl.innerText = "Tages-Sentiment:";
-        sentimentEl.appendChild(labelEl);
-        
-        const changeEl = document.createElement("span");
-        changeEl.className = "sentiment-change";
-        
-        if (this.config.colored) {
-            if (sentiment.changePercent > 0) {
-                changeEl.classList.add("pos");
-            } else if (sentiment.changePercent < 0) {
-                changeEl.classList.add("neg");
-            }
-        }
-        
-        const sign = sentiment.changePercent > 0 ? "+" : "";
-        const arrow = sentiment.changePercent > 0 ? "▲" : (sentiment.changePercent < 0 ? "▼" : "•");
-        changeEl.innerText = `${arrow} ${sign}${sentiment.changePercent.toFixed(2)}%`;
-        sentimentEl.appendChild(changeEl);
-        
-        return sentimentEl;
-    },
-
     getDom: function () {
         const wrapper = document.createElement("div");
         wrapper.className = "mmm-ticker-container";
@@ -265,12 +228,6 @@ Module.register("MMM-Ticker", {
         if (this.config.mode === "table") {
             wrapper.classList.add("table-mode");
             wrapper.style.setProperty("--columns", this.config.columns);
-            
-            // Add sentiment banner at the top of the table
-            const sentimentEl = this.createSentimentElement(sentiment);
-            if (sentimentEl) {
-                wrapper.appendChild(sentimentEl);
-            }
 
             this.stocks.forEach(stock => {
                 const item = this.createStockElement(stock);
@@ -279,13 +236,13 @@ Module.register("MMM-Ticker", {
         } else {
             // Default: Ticker Mode
             wrapper.classList.add("ticker-mode");
-            
+
             const marqueeWrapper = document.createElement("div");
             marqueeWrapper.className = "mmm-ticker-marquee-wrapper";
-            
+
             const marqueeInner = document.createElement("div");
             marqueeInner.className = "mmm-ticker-marquee-inner";
-            
+
             // Set speed class
             marqueeInner.classList.add(`speed-${this.config.speed}`);
 
@@ -294,12 +251,6 @@ Module.register("MMM-Ticker", {
             const renderGroup = () => {
                 const group = document.createElement("div");
                 group.className = "mmm-ticker-group";
-                
-                // Add sentiment item at the start of the ticker
-                const sentimentEl = this.createSentimentElement(sentiment);
-                if (sentimentEl) {
-                    group.appendChild(sentimentEl);
-                }
 
                 this.stocks.forEach(stock => {
                     const item = this.createStockElement(stock);
@@ -311,7 +262,7 @@ Module.register("MMM-Ticker", {
             // Append two identical groups
             marqueeInner.appendChild(renderGroup());
             marqueeInner.appendChild(renderGroup());
-            
+
             marqueeWrapper.appendChild(marqueeInner);
             wrapper.appendChild(marqueeWrapper);
         }
