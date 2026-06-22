@@ -41,6 +41,22 @@ Since the module is self-contained in your `modules/` directory and requires no 
 
 ---
 
+## Portfolio Tracking
+
+The module also supports basic portfolio tracking. Instead of specifying stock symbols as plain strings in the `symbols` array, you can define them as objects containing a `shares` property:
+
+```javascript
+symbols: [
+    { symbol: "AAPL", shares: 10 },
+    { symbol: "MSFT", shares: 5 },
+    "TSLA" // Plain strings are still supported
+]
+```
+
+When you define shares for stocks, the module calculates the portfolio's total value, net change, and percentage change internally.
+
+---
+
 ## Configuration Example
 
 Here is a full configuration example for `config/config.js`:
@@ -50,7 +66,15 @@ Here is a full configuration example for `config/config.js`:
     module: "MMM-Ticker",
     position: "top_bar", // Ideal for ticker mode. Use top_left or top_right for table mode.
     config: {
-        symbols: ["AAPL", "MSFT", "TSLA", "SAP.DE", "MBG.DE", "ALV.DE", "^GDAXI"],
+        symbols: [
+            { symbol: "AAPL", shares: 10 },
+            { symbol: "MSFT", shares: 5 },
+            "TSLA",
+            "SAP.DE",
+            "MBG.DE",
+            "ALV.DE",
+            "^GDAXI"
+        ],
         mode: "ticker",
         speed: "medium",
         updateInterval: 15 * 60 * 1000, // 15 minutes
@@ -63,3 +87,4 @@ Here is a full configuration example for `config/config.js`:
     }
 }
 ```
+
