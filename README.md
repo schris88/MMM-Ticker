@@ -38,6 +38,12 @@ Since the module is self-contained in your `modules/` directory and requires no 
 | `stripSuffix` | `Boolean` | `true` | Hide regional suffixes from symbols (e.g., `SAP.DE` renders as `SAP`). |
 | `colored` | `Boolean` | `true` | Show positive changes in green and negative in red. |
 | `customNames` | `Object` | `{}` | Key-value pairs of aliases/custom names (e.g. `{"^GDAXI": "DAX", "ALV.DE": "Allianz"}`). |
+| `currencySymbols` | `Object` | `{"USD": "$", "EUR": "€", ...}` | Key-value pairs mapping currency codes to symbols (defaults are `USD`, `EUR`, `GBP`, `JPY`, `CHF`). |
+| `enablePushover` | `Boolean` | `false` | Enables sending push notifications via Pushover when price alert thresholds are crossed. |
+| `pushoverThresholdDrop` | `Number` | `5` | The 2-day drop threshold (in percent) that triggers a Pushover alert. |
+| `pushoverThresholdRise` | `Number` | `null` | The 2-day rise threshold (in percent) that triggers a Pushover alert. Set to `null` to disable. |
+| `pushoverApiToken` | `String` | `""` | Pushover Application API Token. |
+| `pushoverUserKey` | `String` | `""` | Pushover User Key. |
 
 ---
 
@@ -54,6 +60,26 @@ symbols: [
 ```
 
 When you define shares for stocks, the module calculates the portfolio's total value, net change, and percentage change internally.
+
+---
+
+## Pushover Alerts
+
+The module supports sending push notifications via [Pushover](https://pushover.net/) when a stock experiences a significant price movement over a 2-day period.
+
+To enable Pushover alerts, configure the following settings in your `config.js`:
+
+```javascript
+enablePushover: true,
+pushoverApiToken: "YOUR_PUSHOVER_APP_TOKEN",
+pushoverUserKey: "YOUR_PUSHOVER_USER_KEY",
+pushoverThresholdDrop: 5, // Alert if stock drops 5% or more over 2 days
+pushoverThresholdRise: 10, // Alert if stock rises 10% or more over 2 days
+```
+
+### How it works:
+1. **2-Day Change Tracking**: The module fetches Yahoo Finance 2-day chart data. It calculates the percentage change between the current market price and the price from 2 days ago.
+2. **Alert Frequency Limiting**: To prevent notification spam, the module caches sent alerts in a local file (`sent_alerts.json`) and will only send one drop alert and one rise alert per stock symbol per day.
 
 ---
 

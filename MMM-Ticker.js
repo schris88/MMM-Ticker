@@ -25,7 +25,13 @@ Module.register("MMM-Ticker", {
             "GBP": "£",
             "JPY": "¥",
             "CHF": "CHF"
-        }
+        },
+        enablePushover: false,
+        pushoverThresholdDrop: 5,
+        pushoverThresholdRise: null,
+        pushoverApiToken: "",
+        pushoverUserKey: "",
+        showPrice: true
     },
 
     start: function () {
@@ -46,7 +52,14 @@ Module.register("MMM-Ticker", {
 
     getData: function () {
         this.sendSocketNotification("GET_TICKER_DATA", {
-            symbols: this.config.symbols
+            symbols: this.config.symbols,
+            pushover: {
+                enabled: this.config.enablePushover,
+                thresholdDrop: this.config.pushoverThresholdDrop,
+                thresholdRise: this.config.pushoverThresholdRise,
+                token: this.config.pushoverApiToken,
+                user: this.config.pushoverUserKey
+            }
         });
     },
 
@@ -129,10 +142,12 @@ Module.register("MMM-Ticker", {
 
         if (stock.success) {
             // Price
-            const priceEl = document.createElement("span");
-            priceEl.className = "stock-price";
-            priceEl.innerText = this.formatPrice(stock.price, stock.currency);
-            stockEl.appendChild(priceEl);
+            if (this.config.showPrice) {
+                const priceEl = document.createElement("span");
+                priceEl.className = "stock-price";
+                priceEl.innerText = this.formatPrice(stock.price, stock.currency);
+                stockEl.appendChild(priceEl);
+            }
 
             // Change
             const change = stock.change;
